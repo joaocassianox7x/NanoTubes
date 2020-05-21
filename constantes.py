@@ -4,19 +4,19 @@ import numpy as np
 import numpy.linalg as alg
 import time
 import multiprocessing as mp
-import numba
+#import numba
 #import matplotlib.pyplot as plt
 
 pool=mp.Pool(mp.cpu_count())
 ti=time.time()
 #--------------------
 #CONSTANTES NUMERICAS
-ngridy=np.int64(4)
-nsite=np.int64(2)
+ngridy=np.int64(2**5)
+nsite=np.int64(4)
 norbit=np.int64(8)
 cp=16 #casas de precisao
 Einicial=0 #campo inicial
-Efinal=1.5 #campo final
+Efinal=0.5 #campo final
 campos=np.linspace(Einicial,Efinal,2*mp.cpu_count()) #lista de campos
 #-------------------
 #CONSTANTES FISICAS

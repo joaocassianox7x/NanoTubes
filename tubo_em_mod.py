@@ -9,6 +9,7 @@ import numpy.linalg as alg
 import time
 import multiprocessing as mp
 from constantes import *
+import os
 
 def gen_matriz(Ef=0):
     t1j1=np.zeros((3,nsite,norbit,nsite,norbit),dtype=np.longcomplex) #primeiros hoppings
@@ -179,6 +180,8 @@ def tight(Ef=0):
                             j1=norbit*(is1-1)+k2
                             j2=norbit*(is2-1)+k3
                             hamil[j1,j2]+=(t1j2[i,is1,k2,is2,k3]-t1j1[i,is1,k2,is2,k3])*(np.cos(fase)-1j*np.sin(fase))
+                            if j1==j2:
+                                hamil[j1,j2]=0
         a,b=alg.eigh(hamil)
         p=0
         for is1 in range(nsite): 
@@ -203,7 +206,7 @@ def tight(Ef=0):
             for i3 in range(norbit):
                 bandas[i1,i2+i3+1]=eigenval[i1,i2,i3]
     
-    arq=open('textos/'+'E_'+str(round(Ef,4))+'.txt','w')
+    arq=open('Bandas/'+'E_'+str(round(Ef,4))+'.txt','w')
     for i1 in range(len(K)):
         arq.write(str(round(K[i1],cp)))
         arq.write(' ')
@@ -246,11 +249,11 @@ def green(Ef=0):
             for i3 in range(norbits):
                 green_matrix[i1,l1]=ldos[i1,i2,i3]
                 l1+=1
-    np.savetxt('green/green'+str(round(Ef,8))+'.txt',green_matrix)
+    np.savetxt('Green/green'+str(round(Ef,4))+'.txt',green_matrix)
     
 
-    nome='E_'+str(round(Ef,8))
-    k=np.loadtxt('textos/'+nome+'.txt')
+    nome='E_'+str(round(Ef,4))
+    k=np.loadtxt('Bandas/'+nome+'.txt')
     x=k[:,0]
     sitio=nsite*4*2 #numero de sitios
     meio=sitio/2 #constante
@@ -291,7 +294,7 @@ def estados(Ef=0):
     c[:,1]=b[:,nsite*4-1]
     c[:,2]=b[:,nsite*4]
     c[:,3]=b[:,nsite*4+1]
-    np.savetxt("estados/b"+str(Ef)+".txt",c)
+    np.savetxt("Estados/b"+str(Ef)+".txt",c)
  
 def write_cons(A=True):
     if A==True:
@@ -313,10 +316,23 @@ def write_cons(A=True):
     else:
         return
 
+###-----------------------###
+def clr_old(A=False):
+    if A==True:
+        os.system('./clearall.sh')
+    else:
+        return
 
-write_cons()
+clr_old(True) #Apagar resultados anteriores?
+###-----------------------###
 
-#if __name__=='__main__':
-#   pool=mp.Pool(processes=len(campos))
-#   pool.map(ic, campos)
+def three(Ef): #Precisam ser inicializados nessa ordem
+    write_cons(False)
+    #tight(Ef) #apeas o tight
+    green(Ef) #roda o tight e o ldos
+    estados(Ef) #pode ser rodada de forma isolada
+
+if __name__=='__main__':
+    pool=mp.Pool(processes=len(campos)/4)
+    pool.map(three, campos)
 
