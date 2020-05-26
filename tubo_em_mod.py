@@ -323,16 +323,18 @@ def clr_old(A=False):
     else:
         return
 
-clr_old(True) #Apagar resultados anteriores?
+clr_old(False) #Apagar resultados anteriores?
 ###-----------------------###
 
 def three(Ef): #Precisam ser inicializados nessa ordem
     write_cons(False)
     #tight(Ef) #apeas o tight
-    green(Ef) #roda o tight e o ldos
+    #green(Ef) #roda o tight e o ldos
     estados(Ef) #pode ser rodada de forma isolada
 
+print(campos)
+
 if __name__=='__main__':
-    pool=mp.Pool(processes=len(campos)/4)
+    pool=mp.Pool(processes=int(len(campos)/4))
     pool.map(three, campos)
 
