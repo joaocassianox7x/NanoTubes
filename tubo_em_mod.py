@@ -164,11 +164,11 @@ def gen_matriz(Ef=0):
 
 def tight(Ef=0):
     t1j1,t1j2=gen_matriz(Ef)
-    eigenval=np.zeros((2*ngridy+2,nsite,norbit))
+    eigenval=np.zeros((2*ngridy,nsite,norbit))
     hamil=np.zeros((nsite*norbit,nsite*norbit),dtype=complex)
     coeficientes=np.zeros((2*ngridy,nsite,norbit,nsite,norbit))
     sinal=[-1,0,1]
-    K=np.linspace(0,np.pi,2*ngridy)
+    K=np.linspace(-np.pi,np.pi,2*ngridy)
     l=0
     for k in K:
         for i in range(3):
@@ -180,8 +180,8 @@ def tight(Ef=0):
                             j1=norbit*(is1-1)+k2
                             j2=norbit*(is2-1)+k3
                             hamil[j1,j2]+=(t1j2[i,is1,k2,is2,k3]-t1j1[i,is1,k2,is2,k3])*(np.cos(fase)-1j*np.sin(fase))
-                            if j1==j2:
-                                hamil[j1,j2]=0
+                            #if j1==j2:
+                            #    hamil[j1,j2]=0
         a,b=alg.eigh(hamil)
         p=0
         for is1 in range(nsite): 
@@ -220,7 +220,7 @@ def tight(Ef=0):
     arq.close()
     
     return eigenval,coeficientes,K
-
+a,b,c=tight()
 
 def green(Ef=0):
     eigenval,coeficientes,K=tight(Ef)
@@ -289,13 +289,14 @@ def estados(Ef=0):
                         hamil[j1,j2]+=(t1j2[i,is1,k2,is2,k3]-t1j1[i,is1,k2,is2,k3])*(np.cos(fase)-1j*np.sin(fase))
     a,b=alg.eigh(hamil)
     b=np.abs(b)**2
-    c=np.zeros((len(b[:,0]),4))
-    c[:,0]=b[:,nsite*4-2]
-    c[:,1]=b[:,nsite*4-1]
-    c[:,2]=b[:,nsite*4]
-    c[:,3]=b[:,nsite*4+1]
+    c=np.zeros((len(b[:,0]),4+1))
+    c[:,0]=range(len(b[:,0]))
+    c[:,1]=b[:,nsite*4-2]
+    c[:,2]=b[:,nsite*4-1]
+    c[:,3]=b[:,nsite*4]
+    c[:,4]=b[:,nsite*4+1]
     np.savetxt("Estados/b"+str(Ef)+".txt",c)
- 
+'''
 def write_cons(A=True):
     if A==True:
         arq=open('constantes.txt','w')
@@ -316,6 +317,7 @@ def write_cons(A=True):
     else:
         return
 
+t=tight(0)
 ###-----------------------###
 def clr_old(A=False):
     if A==True:
@@ -323,18 +325,20 @@ def clr_old(A=False):
     else:
         return
 
-clr_old(False) #Apagar resultados anteriores?
+clr_old(True) #Apagar resultados anteriores?
+
 ###-----------------------###
 
 def three(Ef): #Precisam ser inicializados nessa ordem
-    write_cons(False)
+    write_cons(True)
     #tight(Ef) #apeas o tight
-    #green(Ef) #roda o tight e o ldos
+    green(Ef) #roda o tight e o ldos
     estados(Ef) #pode ser rodada de forma isolada
 
-print(campos)
+#print(campos)
 
 if __name__=='__main__':
-    pool=mp.Pool(processes=int(len(campos)/4))
+    pool=mp.Pool(processes=int(len(campos)/2))
     pool.map(three, campos)
 
+'''
