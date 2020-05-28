@@ -168,7 +168,7 @@ def tight(Ef=0):
     hamil=np.zeros((nsite*norbit,nsite*norbit),dtype=complex)
     coeficientes=np.zeros((2*ngridy,nsite,norbit,nsite,norbit))
     sinal=[-1,0,1]
-    K=np.linspace(-np.pi,np.pi,2*ngridy)
+    K=np.linspace(0,2*np.pi,2*ngridy)
     l=0
     for k in K:
         for i in range(3):
@@ -231,23 +231,30 @@ def green(Ef=0):
     vec_ener=np.linspace(enerinit,-enerinit,energrid)
     for i1 in range(energrid):
         omega[i1]=enerinit+bandwidth*i1/energrid
-        
     for i1 in range(0,2*ngridy):
         for i3 in range(nsites):
             for i4 in range(norbits):
                 for i2 in range(energrid):
-                    green=1/(omega[i2]-eigenval[i1,i3,i4]+eta)
+                    green=1/(omega[i2]-eigenval[i1,i3,i4]+eta)                   
                     for i5 in range(nsites):
                         for i6 in range(norbits):
                             ldos[i2,i5,i6]=ldos[i2,i5,i6]-coeficientes[i1,i5,i6,i3,i4]*np.imag(green)/np.pi/(2*ngridy)
+                            #print(ldos[i2,i5,i6])
     green_matrix=np.zeros((energrid,nsite*norbit+1))
     green_matrix[:,0]=vec_ener[:]
 
+    k=0
     for i1 in range(energrid):
         l1=1
         for i2 in range(nsites):
             for i3 in range(norbits):
+                k+=1
+                if k==100:
+                    j=green_matrix[i1,l1]
                 green_matrix[i1,l1]=ldos[i1,i2,i3]
+                if k==100:
+                    k=0
+                    print("Antes: ",j," ------- Agora",green_matrix[i1,l1])
                 l1+=1
     np.savetxt('Green/green'+str(round(Ef,4))+'.txt',green_matrix)
     
@@ -296,7 +303,9 @@ def estados(Ef=0):
     c[:,3]=b[:,nsite*4]
     c[:,4]=b[:,nsite*4+1]
     np.savetxt("Estados/b"+str(Ef)+".txt",c)
-'''
+
+green(0)
+
 def write_cons(A=True):
     if A==True:
         arq=open('constantes.txt','w')
@@ -317,7 +326,7 @@ def write_cons(A=True):
     else:
         return
 
-t=tight(0)
+'''
 ###-----------------------###
 def clr_old(A=False):
     if A==True:

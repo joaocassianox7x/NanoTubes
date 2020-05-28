@@ -11,13 +11,13 @@ pool=mp.Pool(mp.cpu_count())
 ti=time.time()
 #--------------------
 #CONSTANTES NUMERICAS
-ngridy=np.int64(2**5)
-nsite=np.int64(4)
+ngridy=np.int64(2**2)
+nsite=np.int64(2)
 norbit=np.int64(8)
 cp=16 #casas de precisao
 Einicial=0 #campo inicial
 Efinal=0.5 #campo final
-campos=np.linspace(Einicial,Efinal,2*mp.cpu_count()) #lista de campos
+campos=np.linspace(Einicial,Efinal,4*mp.cpu_count()) #lista de campos
 #-------------------
 #CONSTANTES FISICAS
 lso=np.float64(0.1)
@@ -29,8 +29,8 @@ Ra=np.float64(3*nsite*ass/(2*np.pi))
 Rb=np.float64(Ra-2*ll)
 #-------------------
 #CONSTANTES PARA GREEN
-bandwidth=np.int64(7)
-enerinit=np.float64(-3.5)
-energrid=np.int64(5*10**1)
+bandwidth=np.int64(10)
+enerinit=np.float64(-5)
+energrid=np.int64(1*10**3)
 eta=1j*np.float64(5*bandwidth/energrid)
 #-------------------
